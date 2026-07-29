@@ -11,7 +11,9 @@
 bool isDaytime;
 uRTCLib rtc(0x68);
 
-int currentState;
+bool remainsDaytime; //true when daytime, false when nighttime, used to signal when state changes
+int startTime[2];
+int eventDelay;
 
 void setup() {
   pinMode(LDR_Pin, INPUT);
@@ -23,9 +25,9 @@ void setup() {
   Serial.begin(9600);
   isDaytime = daytimeDecide();
   if (isDaytime == true) {
-    currentState = 2;
+    remainsDaytime = false;
   } else {
-    currentState = 1;
+    remainsDaytime = true;
   }
 
   URTCLIB_WIRE.begin();
@@ -33,58 +35,49 @@ void setup() {
 }
 
 void loop() {
-  int startTime[2];
-  int currentTime[2];
-  int eventDelay;
-  int eventChoice;
-  bool delayConfirm;
+
   do {
     rtc.refresh();
-    if (currentState == 2) {
+    if (remainsDaytime == false) {
       startTime[0] = rtc.hour();
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
-      eventChoice = eventDecider();
-      currentState = 1;
+      remainsDaytime = true;
     }
 
-    currentTime[0] = rtc.hour();
-    currentTime[1] = rtc.minute();
-    delayConfirm = delayChecker(startTime, currentTime, eventDelay);
+    bool delayConfirm = delayChecker();
     if (delayConfirm == true) {
-      piratesBuzzer();
+      eventPlayer();
       startTime[0] = rtc.hour();
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
-      eventChoice = eventDecider();
     }
     
     rgbColorSet(236, 151, 247);
     isDaytime = daytimeDecide();
   } while (isDaytime == true);
 
+
   do {
       rtc.refresh();
-    if (currentState == 1) {
+    if (remainsDaytime == true) {
       startTime[0] = rtc.hour();
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
-      eventChoice = eventDecider();
-      currentState = 2;
+      remainsDaytime = false;
     }
 
-    currentTime[0] = rtc.hour();
-    currentTime[1] = rtc.minute();
-    delayConfirm = delayChecker(startTime, currentTime, eventDelay);
+    bool delayConfirm = delayChecker();
     if (delayConfirm == true) {
-      lionBuzzer();
+      eventPlayer();
       startTime[0] = rtc.hour();
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
-      eventChoice = eventDecider();
     }
     
     rgbColorSet(255, 87, 0);
     isDaytime = daytimeDecide();
   } while (isDaytime == false);
+
+
 }

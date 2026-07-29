@@ -18,15 +18,18 @@ int eventDecider (void) {
   return random(1,3); //randomly chooses which song to play);
 }
 
-bool delayChecker (int starT[2], int currT[2], int evDelay) {
+bool delayChecker (void) {
+  int currT[2];
+  currT[0] = rtc.hour();
+  currT[1] = rtc.minute();
   int minDifference;
-  if (currT[0] > starT[0]) {
-    minDifference = currT[1] + (60 - starT[1]);
+  if (currT[0] > startTime[0]) {
+    minDifference = currT[1] + (60 - startTime[1]);
   } else {
-    minDifference = currT[1] - starT[1];
+    minDifference = currT[1] - startTime[1];
   }
 
-  if (minDifference == evDelay) {
+  if (minDifference == eventDelay) {
     return true;
   } else {
     return false;
