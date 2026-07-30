@@ -9,13 +9,10 @@ bool daytimeDecide (void) {
 }
 
 int eventDelayer (void) {
+  randomSeed(analogRead(A0));
   int minuteTime = random(1, 4); // randomly chooses what minute to play event, between 1 and 4-1;
   Serial.println(minuteTime);
   return minuteTime;
-}
-
-int eventDecider (void) {
-  return random(1,3); //randomly chooses which song to play);
 }
 
 bool delayChecker (void) {

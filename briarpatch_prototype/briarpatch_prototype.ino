@@ -4,16 +4,16 @@
 #define LED_B 6
 #define BUZZER 8
 
-#include <Arduino.h>
-#include <pitches.h>
 #include <uRTCLib.h>
 
 bool isDaytime;
 uRTCLib rtc(0x68);
 
 bool remainsDaytime; //true when daytime, false when nighttime, used to signal when state changes
-int startTime[2];
-int eventDelay;
+uint8_t startTime[2];
+uint8_t eventDelay;
+
+bool lightEffectSignal;
 
 void setup() {
   pinMode(LDR_Pin, INPUT);
@@ -21,8 +21,10 @@ void setup() {
   pinMode(LED_G, OUTPUT);
   pinMode(LED_B, OUTPUT);
   rgbColorSet(0,0,0);
+  noTone(BUZZER);
 
-  Serial.begin(9600);
+  randomSeed(analogRead(A0));
+
   isDaytime = daytimeDecide();
   if (isDaytime == true) {
     remainsDaytime = false;
@@ -30,6 +32,7 @@ void setup() {
     remainsDaytime = true;
   }
 
+  Serial.begin(9600);
   URTCLIB_WIRE.begin();
   //rtc.set(30, 29, 17, 3, 28, 7, 26);
 }
@@ -39,6 +42,7 @@ void loop() {
   do {
     rtc.refresh();
     if (remainsDaytime == false) {
+      Serial.println("Daytime Detected");
       startTime[0] = rtc.hour();
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
@@ -61,6 +65,7 @@ void loop() {
   do {
       rtc.refresh();
     if (remainsDaytime == true) {
+      Serial.println("Nighttime Detected");
       startTime[0] = rtc.hour();
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
