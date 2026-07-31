@@ -10,7 +10,7 @@ bool daytimeDecide (void) {
 
 int eventDelayer (void) {
   randomSeed(analogRead(A0));
-  int minuteTime = random(3, 19); //randomly chooses what minute to play event, between 3 and 18;
+  int minuteTime = random(2, 4); //randomly chooses what minute to play event, between 3 and 18;
   //minuteTime = minuteTime*10; //elongates time of event delay
   Serial.println(minuteTime);
   return minuteTime;

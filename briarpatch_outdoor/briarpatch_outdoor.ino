@@ -1,9 +1,14 @@
+//DOESNT PLAY SECOND EASTER EGG
+
 #define LDR_Pin A1
+#define BUSYPIN 2
 
 #include "Arduino.h"
 #include "DFRobotDFPlayerMini.h"
 #include <uRTCLib.h>
-#define FPSerial Serial1
+#include <SoftwareSerial.h>
+SoftwareSerial softSerial(9,8);
+#define FPSerial softSerial
 
 DFRobotDFPlayerMini mp3Player;
 
@@ -13,13 +18,16 @@ bool remainsDaytime; //true when daytime, false when nighttime, used to signal w
 uint8_t startTime[2];
 uint8_t eventDelay;
 
+bool eventPlayed;
+bool eventConfirm;
+
 void setup() {
   pinMode(LDR_Pin, INPUT);
+  pinMode(BUSYPIN, INPUT);
 
   randomSeed(analogRead(A0));
 
-  isDaytime = daytimeDecide();
-  if (isDaytime == true) {
+  if (daytimeDecide() == true) {
     remainsDaytime = false;
   } else {
     remainsDaytime = true;
@@ -30,7 +38,17 @@ void setup() {
   URTCLIB_WIRE.begin();
   //rtc.set(30, 29, 17, 3, 28, 7, 26);
 
-  mp3Player.volume(15);
+  Serial.println();
+  Serial.println(F("DFRobot DFPlayer Mini Demo"));
+  Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+  if (!mp3Player.begin(FPSerial, /*isACK = */true, /*doReset = */true)) {  //Use serial to communicate with mp3.
+    Serial.println(F("Unable to begin:"));
+    Serial.println(F("1.Please recheck the connection!"));
+    Serial.println(F("2.Please insert the SD card!"));
+    while(true);
+  }
+  Serial.println(F("DFPlayer Mini online."));
+  mp3Player.setTimeOut(500); //Set serial communictaion time out 500ms
 }
 
 void loop() {
@@ -43,11 +61,18 @@ void loop() {
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
       remainsDaytime = true;
-      mp3Player.loop(1);
+      mp3Player.pause();
+      mp3Player.volume(20);
+      mp3Player.loop(2);
     }
 
-    if (delayChecker() == true) {
-      eventPlayer();
+    eventConfirm = delayChecker();
+    if (eventConfirm == true) {
+      if (eventPlayed == false) {
+        eventPlayer();
+      }
+      eventPlayed = false;
+      eventConfirm = delayChecker();
     }
     
   } while (daytimeDecide() == true);
@@ -61,15 +86,19 @@ void loop() {
       startTime[1] = rtc.minute();
       eventDelay = eventDelayer();
       remainsDaytime = false;
-      mp3Player.loop(2)
+      mp3Player.pause();
+      mp3Player.volume(25);
+      mp3Player.loop(3);
     }
 
-    if (delayChecker() == true) {
-      eventPlayer();
-      startTime[0] = rtc.hour();
-      startTime[1] = rtc.minute();
-      eventDelay = eventDelayer();
-      mp3Player.loop(2);
+    
+    eventConfirm = delayChecker();
+    if (eventConfirm == true) {
+      if (eventPlayed == false) {
+        eventPlayer();
+      }
+      eventPlayed = false;
+      eventConfirm = delayChecker();
     }
     
   } while (daytimeDecide() == false);
