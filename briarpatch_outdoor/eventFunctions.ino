@@ -7,16 +7,21 @@ void eventPlayer (void) {
     Serial.println("Day Event Play");
   } else if (daytimeDecide() == false) {
     int eventIndex = random(1, 4);
+    Serial.print("Night event index: ");
     Serial.println(eventIndex);
-    eventChoice;
     switch (eventIndex) {
       case 1:
       eventChoice = 6;
+      break;
       case 2:
       eventChoice = 7;
+      break;
       case 3:
       eventChoice = 1;
+      break;
     }
+    Serial.print("Night Event Choice: ");
+    Serial.println(eventChoice);
     Serial.println("Night Event Play");
   }
 
@@ -26,26 +31,31 @@ void eventPlayer (void) {
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
       Serial.println("Splash Mountain");
+      break;
     case 5: //Snow White
       mp3Player.pause();
       mp3Player.volume(26);
       mp3Player.play(eventChoice);
       Serial.println("Snow White");
+      break;
     case 6: //Bayou Banjo
       mp3Player.pause();
       mp3Player.volume(20);
       mp3Player.play(eventChoice);
       Serial.println("Bayou Banjo");
+      break;
     case 7: //Haunted Mansion
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
       Serial.println("Haunted Mansion");
+      break;
     case 1: //Wish Upon
       mp3Player.pause();
       mp3Player.volume(22);
       mp3Player.play(eventChoice);
       Serial.println("Wish Upon");
+      break;
   }
   
 
