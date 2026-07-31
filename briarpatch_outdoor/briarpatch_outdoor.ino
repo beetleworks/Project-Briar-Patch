@@ -1,5 +1,3 @@
-//DOESNT PLAY SECOND EASTER EGG
-
 #define LDR_Pin A1
 #define BUSYPIN 2
 
@@ -14,12 +12,14 @@ DFRobotDFPlayerMini mp3Player;
 
 uRTCLib rtc(0x68);
 
+
 bool remainsDaytime; //true when daytime, false when nighttime, used to signal when state changes
 uint8_t startTime[2];
 uint8_t eventDelay;
 
-bool eventPlayed;
+bool eventPlayed = false;
 bool eventConfirm;
+int eventChoice;
 
 void setup() {
   pinMode(LDR_Pin, INPUT);
@@ -36,7 +36,12 @@ void setup() {
   FPSerial.begin(9600);
   Serial.begin(9600);
   URTCLIB_WIRE.begin();
-  //rtc.set(30, 29, 17, 3, 28, 7, 26);
+  //rtc.set(30, 53, 9, 6, 31, 7, 26);
+  rtc.refresh();
+  startTime[0] = rtc.hour();
+  startTime[1] = rtc.minute();
+  Serial.println();
+  eventDelay = eventDelayer();
 
   Serial.println();
   Serial.println(F("DFRobot DFPlayer Mini Demo"));
@@ -52,55 +57,57 @@ void setup() {
 }
 
 void loop() {
-
   do { //daytime Loop
-    rtc.refresh();
-    if (remainsDaytime == false) {
-      Serial.println("Daytime Detected");
-      startTime[0] = rtc.hour();
-      startTime[1] = rtc.minute();
-      eventDelay = eventDelayer();
-      remainsDaytime = true;
-      mp3Player.pause();
-      mp3Player.volume(20);
-      mp3Player.loop(2);
+    if (eventConfirm == false) {
+      if (remainsDaytime == false) {
+        Serial.println("Daytime Detected");
+        startTime[0] = rtc.hour();
+        startTime[1] = rtc.minute();
+        eventDelay = eventDelayer();
+        remainsDaytime = true;
+        dayEffect();
+        Serial.println("Daytime Setup");
+      }
+
+      eventConfirm = delayChecker();
+      //Serial.print("Event Confirm: ");
+      //Serial.println(eventConfirm);
+
+    } else if (eventConfirm == true) {
+      eventPlayer();
+      if (eventPlayed == true) {
+        eventConfirm = delayChecker();
+        eventPlayed = false;
+      }
     }
 
-    eventConfirm = delayChecker();
-    if (eventConfirm == true) {
-      if (eventPlayed == false) {
-        eventPlayer();
-      }
-      eventPlayed = false;
-      eventConfirm = delayChecker();
-    }
-    
+
   } while (daytimeDecide() == true);
 
 
   do { //nighttime loop
-      rtc.refresh();
-    if (remainsDaytime == true) {
-      Serial.println("Nighttime Detected");
-      startTime[0] = rtc.hour();
-      startTime[1] = rtc.minute();
-      eventDelay = eventDelayer();
-      remainsDaytime = false;
-      mp3Player.pause();
-      mp3Player.volume(25);
-      mp3Player.loop(3);
-    }
-
-    
-    eventConfirm = delayChecker();
-    if (eventConfirm == true) {
-      if (eventPlayed == false) {
-        eventPlayer();
+    if (eventConfirm == false) {
+      if (remainsDaytime == true) {
+        Serial.println("Nighttime Detected");
+        startTime[0] = rtc.hour();
+        startTime[1] = rtc.minute();
+        eventDelay = eventDelayer();
+        remainsDaytime = false;
+        nightEffect();
+        Serial.println("Nighttime Setup");
       }
-      eventPlayed = false;
+
       eventConfirm = delayChecker();
+      //Serial.print("Event Confirm: ");
+      //Serial.println(eventConfirm);
+
+    } else if (eventConfirm == true) {
+      eventPlayer();
+      if (eventPlayed == true) {
+        eventConfirm = delayChecker();
+        eventPlayed = false;
+      }
     }
-    
   } while (daytimeDecide() == false);
 
 

@@ -1,33 +1,58 @@
 void eventPlayer (void) {
-  eventPlayed = true;
   mp3Player.disableLoop();
   Serial.println("Running Event");
-  randomSeed(analogRead(A0));
-  mp3Player.pause();
-  mp3Player.volume(20);
   
   if (daytimeDecide() == true) {
-    int eventChoice = random(4, 6);
-    mp3Player.pause();
-    mp3Player.play(eventChoice);
+    eventChoice = random(4, 6);
     Serial.println("Day Event Play");
   } else if (daytimeDecide() == false) {
-    int eventChoice = random(0, 3);
-    int nightChoice[3] = {6, 7, 1};
-    mp3Player.pause();
-    mp3Player.play(nightChoice[eventChoice]);
+    int eventIndex = random(1, 4);
+    Serial.println(eventIndex);
+    eventChoice;
+    switch (eventIndex) {
+      case 1:
+      eventChoice = 6;
+      case 2:
+      eventChoice = 7;
+      case 3:
+      eventChoice = 1;
+    }
     Serial.println("Night Event Play");
   }
+
+  switch (eventChoice) {
+    case 4: //Splash Mountain
+      mp3Player.pause();
+      mp3Player.volume(18);
+      mp3Player.play(eventChoice);
+      Serial.println("Splash Mountain");
+    case 5: //Snow White
+      mp3Player.pause();
+      mp3Player.volume(26);
+      mp3Player.play(eventChoice);
+      Serial.println("Snow White");
+    case 6: //Bayou Banjo
+      mp3Player.pause();
+      mp3Player.volume(20);
+      mp3Player.play(eventChoice);
+      Serial.println("Bayou Banjo");
+    case 7: //Haunted Mansion
+      mp3Player.pause();
+      mp3Player.volume(18);
+      mp3Player.play(eventChoice);
+      Serial.println("Haunted Mansion");
+    case 1: //Wish Upon
+      mp3Player.pause();
+      mp3Player.volume(22);
+      mp3Player.play(eventChoice);
+      Serial.println("Wish Upon");
+  }
   
-  
-  
-  //Insert lighting effect here
 
   delay(5000);
   int busyStatus;
   do {
     busyStatus = digitalRead(BUSYPIN);
-    Serial.println(busyStatus);
     delay(1000);
   } while (busyStatus == 0);
   
@@ -35,20 +60,19 @@ void eventPlayer (void) {
     mp3Player.pause();
     Serial.println("Play Finished");
         Serial.println("End Effect");
+        rtc.refresh();
         startTime[0] = rtc.hour();
         startTime[1] = rtc.minute();
         eventDelay = eventDelayer();
         if (daytimeDecide() == true) {
           //Normal daytime lighting effect here
-          mp3Player.volume(30);
-          mp3Player.loop(2);
-          mp3Player.enableLoop();
+          dayEffect();
+          eventPlayed = true;
           return;
         } else {
           //Normal nighttime lighting effect here
-          mp3Player.volume(25);
-          mp3Player.loop(3);
-          mp3Player.enableLoop();
+          nightEffect();
+          eventPlayed = true;
           return;
         }
   }
@@ -101,14 +125,28 @@ void eventPlayer (void) {
     }
   }
 }
+*/
+void dayEffect (void) {
+  mp3Player.pause();
+  mp3Player.volume(27);
+  mp3Player.enableLoop();
+  mp3Player.loop(2);
+}
+
+void nightEffect (void) {
+  mp3Player.pause();
+  mp3Player.volume(22);
+  mp3Player.enableLoop();
+  mp3Player.loop(3);
+}
 
 /*
     Individual Volumes of Tracks
-    i=2 0001 Day_Norm: 37
-    i=3 0002 Night_Norm: 25
-    i=4 0003 Splash_Mountain: 20
+    i=2 0001 Day_Norm: 27
+    i=3 0002 Night_Norm: 22
+    i=4 0003 Splash_Mountain: 18
     i=5 0004 Snow_White: 28
     i=6 0005 Bayou_Banjo: 25
-    i=7 0006 Haunted_Mansion: 22
+    i=7 0006 Haunted_Mansion: 18
     i=1 0007 Wish_Upon: 25
   */
