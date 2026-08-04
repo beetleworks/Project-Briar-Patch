@@ -6,6 +6,7 @@ void eventPlayer (void) {
     eventChoice = random(4, 6);
     Serial.println("Day Event Play");
   } else if (daytimeDecide() == false) {
+    nightEffect(false);
     int eventIndex = random(1, 4);
     Serial.print("Night event index: ");
     Serial.println(eventIndex);
@@ -42,12 +43,14 @@ void eventPlayer (void) {
       mp3Player.pause();
       mp3Player.volume(20);
       mp3Player.play(eventChoice);
+      normFire2012(true);
       Serial.println("Bayou Banjo");
       break;
     case 7: //Haunted Mansion
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
+      hmEffect(true);
       Serial.println("Haunted Mansion");
       break;
     case 1: //Wish Upon
@@ -68,6 +71,8 @@ void eventPlayer (void) {
   
   if (busyStatus == 1) {
     mp3Player.pause();
+    normFire2012(false);
+    hmEffect(false);
     Serial.println("Play Finished");
         Serial.println("End Effect");
         rtc.refresh();
@@ -81,7 +86,7 @@ void eventPlayer (void) {
           return;
         } else {
           //Normal nighttime lighting effect here
-          nightEffect();
+          nightEffect(true);
           eventPlayed = true;
           return;
         }
@@ -141,13 +146,18 @@ void dayEffect (void) {
   mp3Player.volume(27);
   mp3Player.enableLoop();
   mp3Player.loop(2);
+  for (i = 0; i <= NUM_LEDS; i++) {
+    leds[i] = CRGB::BLACK;
+    FastLED.show();
+  }
 }
 
-void nightEffect (void) {
+void nightEffect (bool inputYN) {
   mp3Player.pause();
   mp3Player.volume(22);
   mp3Player.enableLoop();
   mp3Player.loop(3);
+  normFire2012(inputYN);
 }
 
 /*

@@ -1,27 +1,37 @@
 #define LDR_Pin A1
 #define BUSYPIN 2
+#define LED_Pin 6
 
 #include "Arduino.h"
 #include "DFRobotDFPlayerMini.h"
 #include <uRTCLib.h>
 #include <SoftwareSerial.h>
+#include <FastLED.h>
+
 SoftwareSerial softSerial(9,8);
 #define FPSerial softSerial
+
+//LED Vars
+#define NUM_LEDS 144
+#define COLOR_ORDER GRB
+#define CHIPSET WS2812B
+CRGB leds[NUM_LEDS];
+CRGBPalette16 currentPalette;
 
 DFRobotDFPlayerMini mp3Player;
 
 uRTCLib rtc(0x68);
 
-
 bool remainsDaytime; //true when daytime, false when nighttime, used to signal when state changes
 uint8_t startTime[2];
 uint8_t eventDelay;
-
 bool eventPlayed = false;
 bool eventConfirm;
 int eventChoice;
 
+
 void setup() {
+  delay(3000);
   pinMode(LDR_Pin, INPUT);
   pinMode(BUSYPIN, INPUT);
 
@@ -54,6 +64,11 @@ void setup() {
   }
   Serial.println(F("DFPlayer Mini online."));
   mp3Player.setTimeOut(500); //Set serial communictaion time out 500ms
+
+  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+
+  nightEffect(false);
+  hmEffect(false);
 }
 
 void loop() {
@@ -93,7 +108,7 @@ void loop() {
         startTime[1] = rtc.minute();
         eventDelay = eventDelayer();
         remainsDaytime = false;
-        nightEffect();
+        nightEffect(true);
         Serial.println("Nighttime Setup");
       }
 
