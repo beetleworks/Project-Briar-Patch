@@ -1,6 +1,6 @@
 void normFire2012 (bool inputYN) {
   int framesPsec = 60;
-  int COOLING = 70;
+  int COOLING = 50;
   int SPARKING = 120;
 
   if (inputYN == true) {

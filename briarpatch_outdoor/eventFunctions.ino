@@ -24,7 +24,7 @@ void eventPlayer (void) {
       eventChoice = 1;
       break;
     }
-    eventChoice = 7; // line is defaulting to chosen event for light effect testing
+    eventChoice = 4; // line is defaulting to chosen event for light effect testing
     Serial.print("Night Event Choice: ");
     Serial.println(eventChoice);
     Serial.println("Night Event Play");
@@ -35,7 +35,7 @@ void eventPlayer (void) {
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
-      trackLength = 137;
+      trackLength = 129;
       Serial.println("Splash Mountain");
       break;
     case 5: //Snow White
@@ -49,21 +49,21 @@ void eventPlayer (void) {
       mp3Player.pause();
       mp3Player.volume(20);
       mp3Player.play(eventChoice);
-      trackLength = 127;
+      trackLength = 117;
       Serial.println("Bayou Banjo");
       break;
     case 7: //Haunted Mansion
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
-      trackLength = 60;
+      trackLength = 57;
       Serial.println("Haunted Mansion");
       break;
     case 1: //Wish Upon
       mp3Player.pause();
       mp3Player.volume(22);
       mp3Player.play(eventChoice);
-      tracklength = 105;
+      trackLength = 82;
       Serial.println("Wish Upon");
       break;
   }
@@ -82,13 +82,15 @@ void eventPlayer (void) {
   //   delay(1000);
   // }
 
-  for (int i = 0; i <= ((trackLength+3)*10); i++) {
+  for (int i = 0; i <= ((trackLength)*10); i++) {
     lightEffects[eventChoice - 1]();
+    Serial.println(i);
     delay(100);
   }
-  
+  Serial.println("Loop Done");
   //if (busyStatus >= 500) {
-    mp3Player.pause();
+    mp3Player.stop();
+    delay(100);
     Serial.println("Play Finished");
         Serial.println("End Effect");
         rtc.refresh();

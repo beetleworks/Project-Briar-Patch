@@ -30,6 +30,10 @@ bool eventPlayed = false;
 bool eventDone = false;
 bool eventConfirm;
 
+//global vars for light effects
+uint8_t gHue = 0;
+int wish_pos = 0;
+
 
 
 void setup() {
