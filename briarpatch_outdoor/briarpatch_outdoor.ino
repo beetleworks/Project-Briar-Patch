@@ -1,6 +1,6 @@
 #define LDR_Pin A1
-#define BUSYPIN 2
-#define LED_Pin 6
+#define BUSYPIN A3
+#define LED_PIN 7
 
 #include "Arduino.h"
 #include "DFRobotDFPlayerMini.h"
@@ -22,10 +22,12 @@ DFRobotDFPlayerMini mp3Player;
 
 uRTCLib rtc(0x68);
 
+bool isDaytime;
 bool remainsDaytime; //true when daytime, false when nighttime, used to signal when state changes
 uint8_t startTime[2];
 uint8_t eventDelay;
 bool eventPlayed = false;
+bool eventDone = false;
 bool eventConfirm;
 int eventChoice;
 
@@ -66,13 +68,14 @@ void setup() {
   mp3Player.setTimeOut(500); //Set serial communictaion time out 500ms
 
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+  
 
   nightEffect(false);
-  hmEffect(false);
+  hmEffect();
 }
 
 void loop() {
-  do { //daytime Loop
+  while (isDaytime == true) { //daytime Loop
     if (eventConfirm == false) {
       if (remainsDaytime == false) {
         Serial.println("Daytime Detected");
@@ -84,23 +87,28 @@ void loop() {
         Serial.println("Daytime Setup");
       }
 
+      dayLightsNorm();
+
       eventConfirm = delayChecker();
+      isDaytime = daytimeDecide();
       //Serial.print("Event Confirm: ");
       //Serial.println(eventConfirm);
 
     } else if (eventConfirm == true) {
-      eventPlayer();
-      if (eventPlayed == true) {
+
+      if (eventPlayed == false) {
+        eventPlayer();
+      } else if (eventPlayed == true && eventDone == true) {
         eventConfirm = delayChecker();
         eventPlayed = false;
+        eventDone = false;
+      }
       }
     }
 
 
-  } while (daytimeDecide() == true);
 
-
-  do { //nighttime loop
+  while (isDaytime == false) { //nighttime loop
     if (eventConfirm == false) {
       if (remainsDaytime == true) {
         Serial.println("Nighttime Detected");
@@ -112,18 +120,24 @@ void loop() {
         Serial.println("Nighttime Setup");
       }
 
+      normFire2012(true);
+
       eventConfirm = delayChecker();
+      isDaytime = daytimeDecide();
       //Serial.print("Event Confirm: ");
       //Serial.println(eventConfirm);
 
     } else if (eventConfirm == true) {
-      eventPlayer();
-      if (eventPlayed == true) {
+
+      if (eventPlayed == false) {
+        eventPlayer();
+      } else if (eventPlayed == true && eventDone == true) {
         eventConfirm = delayChecker();
         eventPlayed = false;
+        eventDone = false;
       }
     }
-  } while (daytimeDecide() == false);
+  }
 
 
 }

@@ -1,28 +1,23 @@
-void hmEffect (bool inputYN) {
+void bbEffect (void) {
+      int brightness = beatsin8(6, 10, 255);
+      fill_solid(leds, NUM_LEDS, CRGB( 204, 85, 0));
+      FastLED.setBrightness(brightness);
+      FastLED.show();
+}
+
+void hmEffect (void) {
   //this function is a green/purple breathing
   //green is R 0, G 255, B 62
   //purple is R 214, G 0, B 255
-  while (inputYN == true) {
-    int startMin = rtc.minute();
-    int startSec = rtc.second();
 
-    while (((rtc.minute() * 60) + rtc.second()) - (((startMin * 60) + startSec) >= 5) {
-      int brightness = beatsin8(12, 10, 255);
-      fill_solid(leds, NUM_LEDS, CRGB(0, 255, 62));
-      FastLED.setBrightness(brightness);
-      FastLED.show();
-    }
+  CRGB hmGreen = CRGB(0, 255, 562);
+  CRGB hmPurple = CRGB(214, 0, 255);
 
-    startMin = rtc.Minute();
-    startSec = rtc.Second();
+  int hmWave = beatsin8(12, 10, 255);
 
-    while (((rtc.minute() * 60) + rtc.second()) - (((startMin * 60) + startSec) >= 5) {
-      int brightness = beatsin8(12, 10, 255);
-      fill_solid(leds, NUM_LEDS, CRGB(214, 0, 255));
-      FastLED.setBrightness(brightness);
-      FastLED.show();
-    }
-  }
+  CRGB hmBlend = nblend(hmGreen, hmPurple, (fract8)hmWave);
+  fill_solid(leds, NUM_LEDS, hmBlend);
+  FastLED.show();
 }
 
 void wishEffect (bool inputYN) {

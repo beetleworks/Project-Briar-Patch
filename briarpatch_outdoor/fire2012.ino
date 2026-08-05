@@ -1,10 +1,9 @@
 void normFire2012 (bool inputYN) {
-  int brightness = 200;
   int framesPsec = 60;
-  int coolingVal = 55;
-  int sparklingVal = 120;
+  int COOLING = 70;
+  int SPARKING = 120;
 
-  while (inputYN == true) {
+  if (inputYN == true) {
   // Array of temperature readings at each simulation cell
     static byte heat[NUM_LEDS];
   
@@ -26,11 +25,12 @@ void normFire2012 (bool inputYN) {
   
       // Step 4.  Map from heat cells to LED colors
       for( int j = 0; j < NUM_LEDS; j++) {
-          leds[j] = HeatColor( heat[j]);
+          leds[j] = HeatMapping( heat[j]);
       }
 
+    FastLED.setBrightness(200);
     FastLED.show();
-    FastLED.delay(1000/framesPsec);
+    delay(1000/framesPsec);
   }
 }
 
@@ -38,8 +38,7 @@ void normFire2012 (bool inputYN) {
 
 
 
-CRGB HeatColor( uint8_t temperature)
-{
+CRGB HeatMapping( uint8_t temperature) {
   CRGB heatcolor;
   
   uint8_t t192 = scale8_video( temperature, 192);

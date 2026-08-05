@@ -4,7 +4,7 @@
 SoftwareSerial softSerial(9,8);
 #define FPSerial softSerial
 
-#define BUSYPIN 2
+#define BUSYPIN A3
 
 DFRobotDFPlayerMini mp3Player;
 
@@ -30,13 +30,13 @@ void setup() {
   mp3Player.setTimeOut(500); //Set serial communictaion time out 500ms
 
   mp3Player.volume(20);
-  mp3Player.play(4);
+  mp3Player.play(6);
 }
 
 
 void loop() {
 
-  Serial.println(digitalRead(BUSYPIN));
+  Serial.println(analogRead(BUSYPIN));
   delay(1000);
   /*
     Individual Volumes of Tracks

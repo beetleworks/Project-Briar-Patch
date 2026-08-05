@@ -1,4 +1,5 @@
 void eventPlayer (void) {
+  eventPlayed = true;
   mp3Player.disableLoop();
   Serial.println("Running Event");
   
@@ -21,6 +22,7 @@ void eventPlayer (void) {
       eventChoice = 1;
       break;
     }
+    eventChoice = 7; // line is defaulting to chosen event for light effect testing
     Serial.print("Night Event Choice: ");
     Serial.println(eventChoice);
     Serial.println("Night Event Play");
@@ -43,14 +45,12 @@ void eventPlayer (void) {
       mp3Player.pause();
       mp3Player.volume(20);
       mp3Player.play(eventChoice);
-      normFire2012(true);
       Serial.println("Bayou Banjo");
       break;
     case 7: //Haunted Mansion
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
-      hmEffect(true);
       Serial.println("Haunted Mansion");
       break;
     case 1: //Wish Upon
@@ -61,18 +61,22 @@ void eventPlayer (void) {
       break;
   }
   
+  delay(1000);
+  mp3Player.disableLoopAll();
 
-  delay(5000);
+  void (*lightEffects[7])() = {wishEffect, dayLightsNorm, normFire2012, splashEffect, swEffect, bbEffect, hmEffect};
+
   int busyStatus;
-  do {
-    busyStatus = digitalRead(BUSYPIN);
+  busyStatus = analogRead(BUSYPIN);
+  while (busyStatus < 500) {
+    busyStatus = analogRead(BUSYPIN);
+    lightEffects[eventChoice - 1]();
+    Serial.println(busyStatus);
     delay(1000);
-  } while (busyStatus == 0);
+  }
   
-  if (busyStatus == 1) {
+  if (busyStatus >= 500) {
     mp3Player.pause();
-    normFire2012(false);
-    hmEffect(false);
     Serial.println("Play Finished");
         Serial.println("End Effect");
         rtc.refresh();
@@ -80,14 +84,12 @@ void eventPlayer (void) {
         startTime[1] = rtc.minute();
         eventDelay = eventDelayer();
         if (daytimeDecide() == true) {
-          //Normal daytime lighting effect here
           dayEffect();
-          eventPlayed = true;
+          eventDone = true;
           return;
         } else {
-          //Normal nighttime lighting effect here
           nightEffect(true);
-          eventPlayed = true;
+          eventDone = true;
           return;
         }
   }
@@ -143,21 +145,21 @@ void eventPlayer (void) {
 */
 void dayEffect (void) {
   mp3Player.pause();
-  mp3Player.volume(27);
+  mp3Player.volume(28);
   mp3Player.enableLoop();
   mp3Player.loop(2);
-  for (i = 0; i <= NUM_LEDS; i++) {
-    leds[i] = CRGB::BLACK;
-    FastLED.show();
-  }
+  fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
+  FastLED.show();
+  return;
 }
 
 void nightEffect (bool inputYN) {
   mp3Player.pause();
-  mp3Player.volume(22);
+  mp3Player.volume(20);
   mp3Player.enableLoop();
   mp3Player.loop(3);
-  normFire2012(inputYN);
+  //normFire2012(inputYN);
+  return;
 }
 
 /*
