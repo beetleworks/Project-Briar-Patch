@@ -24,25 +24,25 @@ void eventPlayer (void) {
       eventChoice = 1;
       break;
     }
-    eventChoice = 4; // line is defaulting to chosen event for light effect testing
     Serial.print("Night Event Choice: ");
     Serial.println(eventChoice);
     Serial.println("Night Event Play");
   }
 
+  eventChoice = 7;
   switch (eventChoice) {
     case 4: //Splash Mountain
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
-      trackLength = 129;
+      trackLength = 15;
       Serial.println("Splash Mountain");
       break;
     case 5: //Snow White
       mp3Player.pause();
       mp3Player.volume(26);
       mp3Player.play(eventChoice);
-      trackLength = 204;
+      trackLength = 103;
       Serial.println("Snow White");
       break;
     case 6: //Bayou Banjo
@@ -61,7 +61,7 @@ void eventPlayer (void) {
       break;
     case 1: //Wish Upon
       mp3Player.pause();
-      mp3Player.volume(22);
+      mp3Player.volume(20);
       mp3Player.play(eventChoice);
       trackLength = 82;
       Serial.println("Wish Upon");
