@@ -31,7 +31,6 @@ bool eventDone = false;
 bool eventConfirm;
 
 //global vars for light effects
-uint8_t gHue = 0;
 int wish_pos = 0;
 
 
@@ -52,7 +51,7 @@ void setup() {
   FPSerial.begin(9600);
   Serial.begin(9600);
   URTCLIB_WIRE.begin();
-  //rtc.set(30, 53, 9, 6, 31, 7, 26);
+  //rtc.set(30, 53, 9, 6, 31, 7, 26); //sec, min, hour, day of week (sun 0), day, month, year
   rtc.refresh();
   startTime[0] = rtc.hour();
   startTime[1] = rtc.minute();
@@ -73,9 +72,7 @@ void setup() {
 
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   
-
   nightEffect(false);
-  hmEffect();
 }
 
 void loop() {

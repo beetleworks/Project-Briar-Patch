@@ -12,9 +12,9 @@ void hmEffect (void) {
   CRGB hmGreen = CRGB(0, 255, 62);
   CRGB hmPurple = CRGB(214, 0, 255);
   int hmWave = beatsin8(8, 10, 255);
+  FastLED.setBrightness(255);
   CRGB hmBlend = nblend(hmGreen, hmPurple, (fract8)hmWave);
   fill_solid(leds, NUM_LEDS, hmBlend);
-  FastLED.setBrightness(200);
   FastLED.show();
 }
 

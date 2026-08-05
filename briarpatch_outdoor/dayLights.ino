@@ -6,21 +6,29 @@ void dayLightsNorm (void) {
 }
 
 void splashEffect (void) {
-  // Fade all existing LEDs slightly to create a trail effect
-  fadeToBlackBy(leds, NUM_LEDS, 20);
-
-  // Calculate a moving position back and forth across the strip
-  // beatsin16(BPM, lowest_index, highest_index)
-  int pos = beatsin16(30, 0, NUM_LEDS - 1);
-  
-  // Set the pixel at the calculated position to the current hue color
-  leds[pos] += CHSV(gHue, 255, 192);
-
-  FastLED.show();
-  
-  // Slowly cycle the base color hue over time
-  gHue++; 
+  //this is a teal sweep function
+  //the teal is R 0, G 242, B 255
+  CRGB splashTeal = CRGB(0, 242, 255);
+  FastLED.setBrightness(255);
+  for (int i = 0; i <= NUM_LEDS; i++) {
+    FastLED.clear();
+    // Fill from index 0 up to current step 'i'
+    fill_solid(leds, i, splashTeal);
+    FastLED.show();
 }
 
 
-void swEffect (void) {}
+void swEffect (void) {
+  // Fade all existing pixels slightly on every frame
+  fadeToBlackBy(leds, NUM_LEDS, 32); 
+
+  // Randomly add new twinkles (adjust '50' for density, max 255)
+  if (random8() < 50) {
+    int pos = random16(NUM_LEDS);
+    // Assign a random vibrant hue with full brightness
+    leds[pos] = CRGB(146, 215, 255); 
+  }
+
+  FastLED.setBrightness(255);
+  FastLED.show();
+}
