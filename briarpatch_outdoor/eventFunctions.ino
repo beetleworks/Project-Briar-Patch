@@ -3,6 +3,8 @@ void eventPlayer (void) {
   mp3Player.disableLoop();
   Serial.println("Running Event");
   
+  int eventChoice;
+  int trackLength;
   if (daytimeDecide() == true) {
     eventChoice = random(4, 6);
     Serial.println("Day Event Play");
@@ -33,49 +35,59 @@ void eventPlayer (void) {
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
+      trackLength = 137;
       Serial.println("Splash Mountain");
       break;
     case 5: //Snow White
       mp3Player.pause();
       mp3Player.volume(26);
       mp3Player.play(eventChoice);
+      trackLength = 204;
       Serial.println("Snow White");
       break;
     case 6: //Bayou Banjo
       mp3Player.pause();
       mp3Player.volume(20);
       mp3Player.play(eventChoice);
+      trackLength = 127;
       Serial.println("Bayou Banjo");
       break;
     case 7: //Haunted Mansion
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
+      trackLength = 60;
       Serial.println("Haunted Mansion");
       break;
     case 1: //Wish Upon
       mp3Player.pause();
       mp3Player.volume(22);
       mp3Player.play(eventChoice);
+      tracklength = 105;
       Serial.println("Wish Upon");
       break;
   }
   
-  delay(1000);
+  // delay(1000);
   mp3Player.disableLoopAll();
 
   void (*lightEffects[7])() = {wishEffect, dayLightsNorm, normFire2012, splashEffect, swEffect, bbEffect, hmEffect};
 
-  int busyStatus;
-  busyStatus = analogRead(BUSYPIN);
-  while (busyStatus < 500) {
-    busyStatus = analogRead(BUSYPIN);
+  // int busyStatus;
+  // busyStatus = analogRead(BUSYPIN);
+  // while (busyStatus < 500) {
+  //   busyStatus = analogRead(BUSYPIN);
+  //   lightEffects[eventChoice - 1]();
+  //   Serial.println(busyStatus);
+  //   delay(1000);
+  // }
+
+  for (int i = 0; i <= ((trackLength+3)*10); i++) {
     lightEffects[eventChoice - 1]();
-    Serial.println(busyStatus);
-    delay(1000);
+    delay(100);
   }
   
-  if (busyStatus >= 500) {
+  //if (busyStatus >= 500) {
     mp3Player.pause();
     Serial.println("Play Finished");
         Serial.println("End Effect");
@@ -92,7 +104,7 @@ void eventPlayer (void) {
           eventDone = true;
           return;
         }
-  }
+  //}
 }
 /*
   if (mp3Player.available()) { //Once effect sound is done playing

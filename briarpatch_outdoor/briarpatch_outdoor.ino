@@ -29,7 +29,7 @@ uint8_t eventDelay;
 bool eventPlayed = false;
 bool eventDone = false;
 bool eventConfirm;
-int eventChoice;
+
 
 
 void setup() {
