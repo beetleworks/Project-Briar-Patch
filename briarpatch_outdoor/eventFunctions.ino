@@ -15,13 +15,13 @@ void eventPlayer (void) {
     Serial.println(eventIndex);
     switch (eventIndex) {
       case 1:
-      eventChoice = 6;
+      eventChoice = 5;
       break;
       case 2:
-      eventChoice = 7;
+      eventChoice = 6;
       break;
       case 3:
-      eventChoice = 1;
+      eventChoice = 7;
       break;
     }
     Serial.print("Night Event Choice: ");
@@ -31,39 +31,39 @@ void eventPlayer (void) {
 
   eventChoice = 7;
   switch (eventChoice) {
-    case 4: //Splash Mountain
+    case 3: //Splash Mountain
       mp3Player.pause();
-      mp3Player.volume(18);
+      mp3Player.volume(20);
       mp3Player.play(eventChoice);
-      trackLength = 15;
+      trackLength = 135;
       Serial.println("Splash Mountain");
       break;
-    case 5: //Snow White
+    case 4: //Snow White
       mp3Player.pause();
       mp3Player.volume(26);
       mp3Player.play(eventChoice);
-      trackLength = 103;
+      trackLength = 12;
       Serial.println("Snow White");
       break;
-    case 6: //Bayou Banjo
+    case 5: //Bayou Banjo
       mp3Player.pause();
-      mp3Player.volume(20);
+      mp3Player.volume(24);
       mp3Player.play(eventChoice);
       trackLength = 117;
       Serial.println("Bayou Banjo");
       break;
-    case 7: //Haunted Mansion
+    case 6: //Haunted Mansion
       mp3Player.pause();
       mp3Player.volume(18);
       mp3Player.play(eventChoice);
       trackLength = 57;
       Serial.println("Haunted Mansion");
       break;
-    case 1: //Wish Upon
+    case 7: //Wish Upon
       mp3Player.pause();
-      mp3Player.volume(20);
+      mp3Player.volume(24);
       mp3Player.play(eventChoice);
-      trackLength = 82;
+      trackLength = 97;
       Serial.println("Wish Upon");
       break;
   }
@@ -159,9 +159,9 @@ void eventPlayer (void) {
 */
 void dayEffect (void) {
   mp3Player.pause();
-  mp3Player.volume(28);
+  mp3Player.volume(24);
   mp3Player.enableLoop();
-  mp3Player.loop(2);
+  mp3Player.loop(1);
   fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
   FastLED.show();
   return;
@@ -169,9 +169,9 @@ void dayEffect (void) {
 
 void nightEffect (bool inputYN) {
   mp3Player.pause();
-  mp3Player.volume(20);
+  mp3Player.volume(15);
   mp3Player.enableLoop();
-  mp3Player.loop(3);
+  mp3Player.loop(2);
   //normFire2012(inputYN);
   return;
 }

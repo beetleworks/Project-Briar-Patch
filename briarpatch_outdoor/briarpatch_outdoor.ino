@@ -8,7 +8,7 @@
 #include <SoftwareSerial.h>
 #include <FastLED.h>
 
-SoftwareSerial softSerial(9,8);
+SoftwareSerial softSerial(8,9);
 #define FPSerial softSerial
 
 //LED Vars
@@ -24,8 +24,8 @@ uRTCLib rtc(0x68);
 
 bool isDaytime;
 bool remainsDaytime; //true when daytime, false when nighttime, used to signal when state changes
-uint8_t startTime[2];
-uint8_t eventDelay;
+int startTime[2];
+int eventDelay;
 bool eventPlayed = false;
 bool eventDone = false;
 bool eventConfirm;
@@ -51,7 +51,7 @@ void setup() {
   FPSerial.begin(9600);
   Serial.begin(9600);
   URTCLIB_WIRE.begin();
-  //rtc.set(30, 53, 9, 6, 31, 7, 26); //sec, min, hour, day of week (sun 0), day, month, year
+  //rtc.set(30, 10, 15, 3, 29, 9, 26); //sec, min, hour, day of week (sun 0), day, month, year
   rtc.refresh();
   startTime[0] = rtc.hour();
   startTime[1] = rtc.minute();

@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "DFRobotDFPlayerMini.h"
 #include <SoftwareSerial.h>
-SoftwareSerial softSerial(9,8);
+SoftwareSerial softSerial(8,9);
 #define FPSerial softSerial
 
 #define BUSYPIN A3
@@ -29,8 +29,8 @@ void setup() {
   
   mp3Player.setTimeOut(500); //Set serial communictaion time out 500ms
 
-  mp3Player.volume(20);
-  mp3Player.play(6);
+  mp3Player.volume(15);
+  mp3Player.play(5);
 }
 
 
