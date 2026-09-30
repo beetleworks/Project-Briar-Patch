@@ -1,36 +1,25 @@
 void eventPlayer (void) {
+  //stop current behavior
   eventPlayed = true;
   mp3Player.disableLoop();
-  Serial.println("Running Event");
   
-  int eventChoice;
-  int trackLength;
+  //choose which event to play
+  int eventChoice; //simple indicator of wich event is chosen
+  int trackLength; //arbitrary sign of length of audio track; manually set
   if (daytimeDecide() == true) {
-    eventChoice = random(4, 6);
+    eventChoice = random(3, 5);
     Serial.println("Day Event Play");
+
   } else if (daytimeDecide() == false) {
     nightEffect(false);
-    int eventIndex = random(1, 4);
-    Serial.print("Night event index: ");
-    Serial.println(eventIndex);
-    switch (eventIndex) {
-      case 1:
-      eventChoice = 5;
-      break;
-      case 2:
-      eventChoice = 6;
-      break;
-      case 3:
-      eventChoice = 7;
-      break;
-    }
-    Serial.print("Night Event Choice: ");
-    Serial.println(eventChoice);
+    eventChoice = random(5, 8);
     Serial.println("Night Event Play");
   }
 
-  eventChoice = 7;
+  //trigger event audio based on above choice
+  //eventChoice = 7;
   switch (eventChoice) {
+    //day events
     case 3: //Splash Mountain
       mp3Player.pause();
       mp3Player.volume(20);
@@ -42,9 +31,11 @@ void eventPlayer (void) {
       mp3Player.pause();
       mp3Player.volume(26);
       mp3Player.play(eventChoice);
-      trackLength = 12;
+      trackLength = 12; //number lower due to slower computation cycle speed from lighting effect
       Serial.println("Snow White");
       break;
+    
+    //night events
     case 5: //Bayou Banjo
       mp3Player.pause();
       mp3Player.volume(24);
@@ -68,95 +59,41 @@ void eventPlayer (void) {
       break;
   }
   
-  // delay(1000);
-  mp3Player.disableLoopAll();
 
-  void (*lightEffects[7])() = {wishEffect, dayLightsNorm, normFire2012, splashEffect, swEffect, bbEffect, hmEffect};
+  //mp3Player.disableLoopAll();
+  void (*lightEffects[7])() = {dayLightsNorm, normFire2012, splashEffect, swEffect, bbEffect, hmEffect, wishEffect}; //puts all lighting effects into an array, so code below is more consolidated
 
-  // int busyStatus;
-  // busyStatus = analogRead(BUSYPIN);
-  // while (busyStatus < 500) {
-  //   busyStatus = analogRead(BUSYPIN);
-  //   lightEffects[eventChoice - 1]();
-  //   Serial.println(busyStatus);
-  //   delay(1000);
-  // }
 
+  //plays lighting effects until iterator matches tracklength*10
   for (int i = 0; i <= ((trackLength)*10); i++) {
     lightEffects[eventChoice - 1]();
     Serial.println(i);
     delay(100);
   }
+
+  //ends event and returns to normal behavior
   Serial.println("Loop Done");
-  //if (busyStatus >= 500) {
-    mp3Player.stop();
-    delay(100);
-    Serial.println("Play Finished");
-        Serial.println("End Effect");
-        rtc.refresh();
-        startTime[0] = rtc.hour();
-        startTime[1] = rtc.minute();
-        eventDelay = eventDelayer();
-        if (daytimeDecide() == true) {
-          dayEffect();
-          eventDone = true;
-          return;
-        } else {
-          nightEffect(true);
-          eventDone = true;
-          return;
-        }
-  //}
+  mp3Player.stop();
+  delay(100);
+  Serial.println("Play Finished");
+      Serial.println("End Effect");
+      rtc.refresh();
+      startTime[0] = rtc.hour();
+      startTime[1] = rtc.minute();
+      eventDelay = eventDelayer();
+      if (daytimeDecide() == true) {
+        dayEffect();
+        eventDone = true;
+        return;
+      } else {
+        nightEffect(true);
+        eventDone = true;
+        return;
+      }
 }
-/*
-  if (mp3Player.available()) { //Once effect sound is done playing
-  
-    switch (mp3Player.readType()) {
-      case DFPlayerPlayFinished:
-        Serial.println("Play Finished");
-        Serial.println("End Effect");
-        startTime[0] = rtc.hour();
-        startTime[1] = rtc.minute();
-        eventDelay = eventDelayer();
-        eventPlayed = false;
-        if (daytimeDecide() == true) {
-          //Normal daytime lighting effect here
-          mp3Player.volume(30);
-          mp3Player.loop(2);
-        } else {
-          //Normal nighttime lighting effect here
-          mp3Player.volume(25);
-          mp3Player.loop(3);
-        }
-        break;
-      
-      case DFPlayerError:
-        Serial.print(F("DFPlayerError:"));
-        switch (mp3Player.read()) {
-          case Busy:
-            Serial.println(F("Card not found"));
-            break;
-          case Sleeping:
-            Serial.println(F("Sleeping"));
-            break;
-          case SerialWrongStack:
-            Serial.println(F("Get Wrong Stack"));
-            break;
-          case CheckSumNotMatch:
-            Serial.println(F("Check Sum Not Match"));
-            break;
-          case FileIndexOut:
-            Serial.println(F("File Index Out of Bound"));
-            break;
-          case FileMismatch:
-            Serial.println(F("Cannot Find File"));
-            break;
-        }
-        break;
-    }
-  }
-}
-*/
+
+
+
 void dayEffect (void) {
   mp3Player.pause();
   mp3Player.volume(24);
@@ -167,22 +104,25 @@ void dayEffect (void) {
   return;
 }
 
+
+
 void nightEffect (bool inputYN) {
   mp3Player.pause();
   mp3Player.volume(15);
   mp3Player.enableLoop();
   mp3Player.loop(2);
-  //normFire2012(inputYN);
+  fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
+  FastLED.show();
   return;
 }
 
 /*
     Individual Volumes of Tracks
-    i=2 0001 Day_Norm: 27
-    i=3 0002 Night_Norm: 22
-    i=4 0003 Splash_Mountain: 18
-    i=5 0004 Snow_White: 28
-    i=6 0005 Bayou_Banjo: 25
-    i=7 0006 Haunted_Mansion: 18
-    i=1 0007 Wish_Upon: 25
+    i=1 0001 Day_Norm: 24
+    i=2 0002 Night_Norm: 15
+    i=3 0003 Splash_Mountain: 20
+    i=4 0004 Snow_White: 26
+    i=5 0005 Bayou_Banjo: 24
+    i=6 0006 Haunted_Mansion: 18
+    i=7 0007 Wish_Upon: 24
   */

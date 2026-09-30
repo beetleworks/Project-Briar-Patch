@@ -2,8 +2,16 @@ Day_Norm -> 0001.mp3
 Night_Norm -> 0002.mp3
 
 Splash_Mountain -> 0003.mp3
+TrackLength: 137sec
+
 Snow_White -> 0004.mp3
+TrackLength: 204sec
 
 Bayou_Banjo -> 0005.mp3
+TrackLength: 127sec
+
 Haunted_Mansion -> 0006.mp3
+TrackLength: 60sec
+
 Wish_Upon -> 0007.mp3
+TrackLength: 105sec
