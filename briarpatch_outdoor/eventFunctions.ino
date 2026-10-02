@@ -17,42 +17,42 @@ void eventPlayer (void) {
   }
 
   //trigger event audio based on above choice
-  //eventChoice = 7;
+  eventChoice = 5; //manual event selection for troubleshooting
   switch (eventChoice) {
     //day events
     case 3: //Splash Mountain
       mp3Player.pause();
-      mp3Player.volume(20);
+      mp3Player.volume(18);
       mp3Player.play(eventChoice);
-      trackLength = 135;
+      trackLength = 15;
       Serial.println("Splash Mountain");
       break;
     case 4: //Snow White
       mp3Player.pause();
-      mp3Player.volume(26);
+      mp3Player.volume(24);
       mp3Player.play(eventChoice);
-      trackLength = 12; //number lower due to slower computation cycle speed from lighting effect
+      trackLength = 109;
       Serial.println("Snow White");
       break;
     
     //night events
     case 5: //Bayou Banjo
       mp3Player.pause();
-      mp3Player.volume(24);
+      mp3Player.volume(22);
       mp3Player.play(eventChoice);
       trackLength = 117;
       Serial.println("Bayou Banjo");
       break;
     case 6: //Haunted Mansion
       mp3Player.pause();
-      mp3Player.volume(18);
+      mp3Player.volume(16);
       mp3Player.play(eventChoice);
       trackLength = 57;
       Serial.println("Haunted Mansion");
       break;
     case 7: //Wish Upon
       mp3Player.pause();
-      mp3Player.volume(24);
+      mp3Player.volume(22);
       mp3Player.play(eventChoice);
       trackLength = 97;
       Serial.println("Wish Upon");
@@ -77,9 +77,7 @@ void eventPlayer (void) {
   delay(100);
   Serial.println("Play Finished");
       Serial.println("End Effect");
-      rtc.refresh();
-      startTime[0] = rtc.hour();
-      startTime[1] = rtc.minute();
+      startTime = rtc.now();
       eventDelay = eventDelayer();
       if (daytimeDecide() == true) {
         dayEffect();
@@ -96,7 +94,7 @@ void eventPlayer (void) {
 
 void dayEffect (void) {
   mp3Player.pause();
-  mp3Player.volume(24);
+  mp3Player.volume(28);
   mp3Player.enableLoop();
   mp3Player.loop(1);
   fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
@@ -108,7 +106,7 @@ void dayEffect (void) {
 
 void nightEffect (bool inputYN) {
   mp3Player.pause();
-  mp3Player.volume(15);
+  mp3Player.volume(18);
   mp3Player.enableLoop();
   mp3Player.loop(2);
   fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));

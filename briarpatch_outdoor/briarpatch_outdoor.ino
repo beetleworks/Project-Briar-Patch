@@ -1,10 +1,9 @@
 #define LDR_Pin A1
-#define BUSYPIN A3
 #define LED_PIN 7
 
 #include "Arduino.h"
 #include "DFRobotDFPlayerMini.h"
-#include <uRTCLib.h>
+#include "RTClib.h"
 #include <SoftwareSerial.h>
 #include <FastLED.h>
 
@@ -21,11 +20,11 @@ CRGB leds[NUM_LEDS];
 CRGBPalette16 currentPalette;
 
 //RTC Definitions
-uRTCLib rtc(0x68);
+RTC_DS1307 rtc;
 
 bool isDaytime; //true when daytime, false when nighttime, used to store info on daylight state
 bool remainsDaytime; //true when daytime, false when nighttime, used to signal when state changes
-int startTime[2]; //hour, minute array that signals the beginning of the norm (between events) period
+DateTime startTime; //hour, minute array that signals the beginning of the norm (between events) period
 int eventDelay; //delay between events, in minutes. Range can be set in timeFunctions tab
 bool eventConfirm; //confirms that it's time to trigger event
 bool eventPlayed = false; //confirms that event has started
@@ -39,7 +38,6 @@ int wish_pos = 0; //global vars for wishEffect lighting effect
 void setup() {
   delay(3000);
   pinMode(LDR_Pin, INPUT);
-  pinMode(BUSYPIN, INPUT);
 
   randomSeed(analogRead(A0));
 
@@ -51,23 +49,25 @@ void setup() {
 
   FPSerial.begin(9600);
   Serial.begin(9600);
-  URTCLIB_WIRE.begin();
-  //rtc.set(30, 10, 15, 3, 29, 9, 26); //sec, min, hour, day of week (sun 0), day, month, year
-  rtc.refresh();
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
 
   Serial.println();
-  Serial.println(_____________________________________________________);
-  Serial.println("Initialize")
+  Serial.println("_____________________________________________________");
+  Serial.println("Initialize");
   Serial.println();
 
-  startTime[0] = rtc.hour();
-  startTime[1] = rtc.minute();
+  startTime = rtc.now();
   eventDelay = eventDelayer();
 
   Serial.println();
   Serial.println(F("DFRobot DFPlayer Mini Demo"));
   Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+  delay(5000);
   if (!mp3Player.begin(FPSerial, /*isACK = */true, /*doReset = */true)) {  //Use serial to communicate with mp3.
     Serial.println(F("Unable to begin:"));
     Serial.println(F("1.Please recheck the connection!"));
@@ -84,8 +84,7 @@ void loop() {
     if (eventConfirm == false) {
       if (remainsDaytime == false) { //runs only of state has swapped from night to day
         Serial.println("Daytime Detected");
-        startTime[0] = rtc.hour();
-        startTime[1] = rtc.minute();
+        startTime = rtc.now();
         eventDelay = eventDelayer();
         remainsDaytime = true;
         dayEffect();
@@ -114,8 +113,7 @@ void loop() {
     if (eventConfirm == false) {
       if (remainsDaytime == true) { //runs only if state has swapped from day to night
         Serial.println("Nighttime Detected");
-        startTime[0] = rtc.hour();
-        startTime[1] = rtc.minute();
+        startTime = rtc.now();
         eventDelay = eventDelayer();
         remainsDaytime = false;
         nightEffect(true);

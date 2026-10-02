@@ -28,7 +28,7 @@ void normFire2012 (bool inputYN) {
           leds[j] = HeatMapping( heat[j]);
       }
 
-    FastLED.setBrightness(255);
+    FastLED.setBrightness(185);
     FastLED.show();
     delay(1000/framesPsec);
   }

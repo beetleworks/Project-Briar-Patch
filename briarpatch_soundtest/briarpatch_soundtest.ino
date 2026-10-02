@@ -18,6 +18,7 @@ void setup() {
   Serial.println();
   Serial.println(F("DFRobot DFPlayer Mini Demo"));
   Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+  delay(5000);
   
   if (!mp3Player.begin(FPSerial, /*isACK = */true, /*doReset = */true)) {  //Use serial to communicate with mp3.
     Serial.println(F("Unable to begin:"));
@@ -29,8 +30,8 @@ void setup() {
   
   mp3Player.setTimeOut(500); //Set serial communictaion time out 500ms
 
-  mp3Player.volume(15);
-  mp3Player.play(5);
+  mp3Player.volume(28);
+  mp3Player.play(1);
 }
 
 
